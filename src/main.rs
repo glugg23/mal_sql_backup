@@ -1,6 +1,7 @@
 use clap::{App, Arg};
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, HeaderValue, COOKIE};
+use scraper::{Html, Selector};
 use std::convert::TryFrom;
 
 fn main() {
@@ -31,5 +32,10 @@ fn main() {
         .send()
         .unwrap();
 
-    println!("{}", res.text().unwrap());
+    let html = Html::parse_document(res.text().unwrap().as_str());
+    let selector = Selector::parse(".spaceit_pad").unwrap();
+
+    for elem in html.select(&selector) {
+        println!("{}", elem.text().next().unwrap().trim_end());
+    }
 }
