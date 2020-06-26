@@ -1,8 +1,7 @@
 use clap::{App, Arg};
 use reqwest::blocking::Client;
-use reqwest::header::{HeaderMap, HeaderValue, COOKIE};
+use reqwest::header::COOKIE;
 use scraper::{Html, Selector};
-use std::convert::TryFrom;
 
 fn main() {
     let args = App::new("MAL SQL Backup")
@@ -18,17 +17,11 @@ fn main() {
 
     let session = args.value_of("session").unwrap();
 
-    let client = Client::builder().cookie_store(true).build().unwrap();
-
-    let mut headers = HeaderMap::new();
-    headers.insert(
-        COOKIE,
-        HeaderValue::try_from(format!("MALSESSIONID={};is_logged_in=1", session)).unwrap(),
-    );
+    let client = Client::builder().build().unwrap();
 
     let res = client
         .get("https://myanimelist.net/ajaxtb.php?detailedaid=1")
-        .headers(headers)
+        .header(COOKIE, format!("MALSESSIONID={};is_logged_in=1", session))
         .send()
         .unwrap();
 
