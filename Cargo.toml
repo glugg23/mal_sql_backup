@@ -5,3 +5,8 @@ authors = ["Max Leonhardt <m.leonhardt424@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+clap = "2.33.1"
+
+[dependencies.reqwest]
+version = "0.10.6"
+features = ["blocking", "cookies"]
