@@ -573,6 +573,7 @@ dependencies = [
  "clap",
  "reqwest",
  "scraper",
+ "serde",
 ]
 
 [[package]]
@@ -1020,6 +1021,7 @@ dependencies = [
  "percent-encoding 2.1.0",
  "pin-project-lite",
  "serde",
+ "serde_json",
  "serde_urlencoded",
  "time",
  "tokio",

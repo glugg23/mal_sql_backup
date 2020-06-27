@@ -1,5 +1,6 @@
 use crate::chapter::Chapter;
 use crate::episode::Episode;
+use crate::user::User;
 use reqwest::blocking::Client;
 use reqwest::Error;
 use scraper::{Html, Selector};
@@ -7,13 +8,23 @@ use scraper::{Html, Selector};
 pub mod chapter;
 pub mod episode;
 pub mod session;
+pub mod user;
 
-const URL: &'static str = "https://myanimelist.net/ajaxtb.php";
+const MAL_URL: &'static str = "https://myanimelist.net/ajaxtb.php";
+const JIKAN_URL: &'static str = "https://api.jikan.moe/v3";
 const SELECTOR: &'static str = ".spaceit_pad";
+
+pub fn get_user_stats(username: &str, client: &Client) -> Result<User, Error> {
+    let res = client
+        .get(format!("{}/user/{}", JIKAN_URL, username).as_str())
+        .send()?;
+
+    Ok(res.json()?)
+}
 
 pub fn get_anime_episodes(anime_id: u32, client: &Client) -> Result<Vec<Episode>, Error> {
     let res = client
-        .get(format!("{}?detailedaid={}", URL, anime_id).as_str())
+        .get(format!("{}?detailedaid={}", MAL_URL, anime_id).as_str())
         .send()?;
 
     let html = Html::parse_document(res.text()?.as_str());
@@ -27,7 +38,7 @@ pub fn get_anime_episodes(anime_id: u32, client: &Client) -> Result<Vec<Episode>
 
 pub fn get_manga_chapters(manga_id: u32, client: &Client) -> Result<Vec<Chapter>, Error> {
     let res = client
-        .get(format!("{}?detailedmid={}", URL, manga_id).as_str())
+        .get(format!("{}?detailedmid={}", MAL_URL, manga_id).as_str())
         .send()?;
 
     let html = Html::parse_document(res.text()?.as_str());

@@ -1,6 +1,6 @@
 use clap::{App, Arg};
 use mal_backup_core::session::set_session_cookie;
-use mal_backup_core::{get_anime_episodes, get_manga_chapters};
+use mal_backup_core::{get_anime_episodes, get_manga_chapters, get_user_stats};
 use reqwest::blocking::Client;
 
 fn main() {
@@ -27,6 +27,9 @@ fn main() {
     let client = Client::builder().cookie_store(true).build().unwrap();
 
     set_session_cookie(&client, username, password).expect("Failed to get session");
+
+    let user = get_user_stats(username, &client).unwrap();
+    println!("{:?}", user);
 
     let episodes = get_anime_episodes(1, &client).unwrap();
 
