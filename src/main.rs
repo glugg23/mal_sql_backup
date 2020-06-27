@@ -1,7 +1,6 @@
 use clap::{App, Arg};
+use mal_backup_core::get_anime_episodes;
 use reqwest::blocking::Client;
-use reqwest::header::COOKIE;
-use scraper::{Html, Selector};
 
 fn main() {
     let args = App::new("MAL SQL Backup")
@@ -17,18 +16,11 @@ fn main() {
 
     let session = args.value_of("session").unwrap();
 
-    let client = Client::builder().build().unwrap();
+    let client = Client::new();
 
-    let res = client
-        .get("https://myanimelist.net/ajaxtb.php?detailedaid=1")
-        .header(COOKIE, format!("MALSESSIONID={};is_logged_in=1", session))
-        .send()
-        .unwrap();
+    let episodes = get_anime_episodes(1, session, &client).unwrap();
 
-    let html = Html::parse_document(res.text().unwrap().as_str());
-    let selector = Selector::parse(".spaceit_pad").unwrap();
-
-    for elem in html.select(&selector) {
-        println!("{}", elem.text().next().unwrap().trim_end());
+    for e in episodes {
+        println!("{}", e);
     }
 }
