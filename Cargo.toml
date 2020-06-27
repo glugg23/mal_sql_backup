@@ -19,4 +19,4 @@ scraper = "0.12.0"
 
 [dependencies.reqwest]
 version = "0.10.6"
-features = ["blocking"]
+features = ["blocking", "cookies"]
