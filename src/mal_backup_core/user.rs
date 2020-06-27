@@ -3,9 +3,9 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 pub struct User {
     user_id: u32,
-    username: String,
-    anime_stats: AnimeStats,
-    manga_stats: MangaStats,
+    pub username: String,
+    pub anime_stats: AnimeStats,
+    pub manga_stats: MangaStats,
     favorites: Favorites,
 }
 
@@ -18,7 +18,7 @@ pub struct AnimeStats {
     on_hold: u32,
     dropped: u32,
     plan_to_watch: u32,
-    total_entries: u32,
+    pub total_entries: u32,
     rewatched: u32,
     episodes_watched: u32,
 }
@@ -32,7 +32,7 @@ pub struct MangaStats {
     on_hold: u32,
     dropped: u32,
     plan_to_read: u32,
-    total_entries: u32,
+    pub total_entries: u32,
     reread: u32,
     chapters_read: u32,
     volumes_read: u32,

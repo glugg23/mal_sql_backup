@@ -1,6 +1,6 @@
 use clap::{App, Arg};
 use mal_backup_core::session::set_session_cookie;
-use mal_backup_core::{get_anime_episodes, get_manga_chapters, get_user_stats};
+use mal_backup_core::{get_anime_episodes, get_anime_list, get_manga_chapters, get_user_stats};
 use reqwest::blocking::Client;
 
 fn main() {
@@ -30,6 +30,9 @@ fn main() {
 
     let user = get_user_stats(username, &client).unwrap();
     println!("{:?}", user);
+
+    let anime_list = get_anime_list(&user, &client).unwrap();
+    println!("{:?}", anime_list);
 
     let episodes = get_anime_episodes(1, &client).unwrap();
 
