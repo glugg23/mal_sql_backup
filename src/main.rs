@@ -1,5 +1,5 @@
 use clap::{App, Arg};
-use mal_backup_core::get_anime_episodes;
+use mal_backup_core::{get_anime_episodes, get_manga_chapters};
 use reqwest::blocking::Client;
 
 fn main() {
@@ -22,5 +22,11 @@ fn main() {
 
     for e in episodes {
         println!("{}", e);
+    }
+
+    let chapters = get_manga_chapters(1, session, &client).unwrap();
+
+    for c in chapters {
+        println!("{}", c);
     }
 }
