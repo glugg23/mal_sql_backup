@@ -1,7 +1,10 @@
+use crate::episode::Episode;
 use reqwest::blocking::Client;
 use reqwest::header::COOKIE;
 use reqwest::Error;
 use scraper::{Html, Selector};
+
+pub mod episode;
 
 const SELECTOR: &'static str = ".spaceit_pad";
 
@@ -9,7 +12,7 @@ pub fn get_anime_episodes(
     anime_id: u32,
     session: &str,
     client: &Client,
-) -> Result<Vec<String>, Error> {
+) -> Result<Vec<Episode>, Error> {
     let res = client
         .get(
             format!(
@@ -26,6 +29,6 @@ pub fn get_anime_episodes(
 
     Ok(html
         .select(&selector)
-        .map(|e| e.text().next().unwrap().trim_end().to_owned())
+        .map(|e| Episode::new(anime_id, e.text().next().unwrap()))
         .collect())
 }
