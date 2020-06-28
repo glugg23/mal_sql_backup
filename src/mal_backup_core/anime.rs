@@ -6,7 +6,7 @@ pub struct Anime {
     title: String,
     #[serde(rename = "type")]
     anime_type: String,
-    watching_status: u8,
+    pub watching_status: u8,
     score: u8,
     watched_episodes: u32,
     total_episodes: u32,

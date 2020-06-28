@@ -21,10 +21,12 @@ fn main() {
                 .takes_value(true)
                 .required(true),
         )
+        .arg(Arg::with_name("skip-planned"))
         .get_matches();
 
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();
+    let skip_planned = args.is_present("skip-planned");
 
     let client = Client::builder().cookie_store(true).build().unwrap();
 
@@ -34,17 +36,23 @@ fn main() {
 
     let anime_list = get_anime_list(&user, &client).unwrap();
 
-    anime_list.iter().for_each(|a| {
+    for a in anime_list.iter() {
         println!("{:?}", a);
-        let episodes = get_anime_episodes(a.mal_id, &client).unwrap();
-        episodes.iter().for_each(|e| println!("{:?}", e))
-    });
+
+        if !(skip_planned && a.watching_status == 6) {
+            let episodes = get_anime_episodes(a.mal_id, &client).unwrap();
+            episodes.iter().for_each(|e| println!("{:?}", e));
+        }
+    }
 
     let manga_list = get_manga_list(&user, &client).unwrap();
 
-    manga_list.iter().for_each(|m| {
+    for m in manga_list.iter() {
         println!("{:?}", m);
-        let chapters = get_manga_chapters(m.mal_id, &client).unwrap();
-        chapters.iter().for_each(|c| println!("{:?}", c))
-    });
+
+        if !(skip_planned && m.reading_status == 6) {
+            let chapters = get_manga_chapters(m.mal_id, &client).unwrap();
+            chapters.iter().for_each(|c| println!("{:?}", c));
+        }
+    }
 }

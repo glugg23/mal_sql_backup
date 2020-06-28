@@ -6,7 +6,7 @@ pub struct Manga {
     title: String,
     #[serde(rename = "type")]
     manga_type: String,
-    reading_status: u8,
+    pub reading_status: u8,
     score: u8,
     read_chapters: u32,
     read_volumes: u32,
