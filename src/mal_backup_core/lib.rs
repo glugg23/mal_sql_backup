@@ -1,6 +1,7 @@
 use crate::anime::Anime;
 use crate::chapter::Chapter;
 use crate::episode::Episode;
+use crate::manga::Manga;
 use crate::user::User;
 use reqwest::blocking::Client;
 use reqwest::Error;
@@ -10,6 +11,7 @@ use serde::Deserialize;
 pub mod anime;
 pub mod chapter;
 pub mod episode;
+pub mod manga;
 pub mod session;
 pub mod user;
 
@@ -44,6 +46,27 @@ pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error>
     }
 
     Ok(anime_list)
+}
+
+#[derive(Deserialize)]
+struct MangaListResponse {
+    manga: Vec<Manga>,
+}
+
+pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error> {
+    let pages = (user.manga_stats.total_entries / 300) + 1;
+    let mut manga_list = Vec::new();
+
+    for i in 1..=pages {
+        let res = client
+            .get(format!("{}/user/{}/mangalist/all/{}", JIKAN_URL, user.username, i).as_str())
+            .send()?;
+
+        let mut res: MangaListResponse = res.json()?;
+        manga_list.append(&mut res.manga);
+    }
+
+    Ok(manga_list)
 }
 
 pub fn get_anime_episodes(anime_id: u32, client: &Client) -> Result<Vec<Episode>, Error> {

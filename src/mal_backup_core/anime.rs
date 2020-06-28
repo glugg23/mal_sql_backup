@@ -10,6 +10,7 @@ pub struct Anime {
     score: u8,
     watched_episodes: u32,
     total_episodes: u32,
+    airing_status: u8,
     is_rewatching: bool,
     tags: Option<String>,
     start_date: Option<String>,
