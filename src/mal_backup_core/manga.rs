@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Manga {
-    mal_id: u32,
+    pub mal_id: u32,
     title: String,
     #[serde(rename = "type")]
     manga_type: String,

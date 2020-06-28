@@ -31,23 +31,20 @@ fn main() {
     set_session_cookie(&client, username, password).expect("Failed to get session");
 
     let user = get_user_stats(username, &client).unwrap();
-    println!("{:?}", user);
 
     let anime_list = get_anime_list(&user, &client).unwrap();
-    println!("{:?}", anime_list);
+
+    anime_list.iter().for_each(|a| {
+        println!("{:?}", a);
+        let episodes = get_anime_episodes(a.mal_id, &client).unwrap();
+        episodes.iter().for_each(|e| println!("{:?}", e))
+    });
 
     let manga_list = get_manga_list(&user, &client).unwrap();
-    println!("{:?}", manga_list);
 
-    let episodes = get_anime_episodes(1, &client).unwrap();
-
-    for e in episodes {
-        println!("{}", e);
-    }
-
-    let chapters = get_manga_chapters(1, &client).unwrap();
-
-    for c in chapters {
-        println!("{}", c);
-    }
+    manga_list.iter().for_each(|m| {
+        println!("{:?}", m);
+        let chapters = get_manga_chapters(m.mal_id, &client).unwrap();
+        chapters.iter().for_each(|c| println!("{:?}", c))
+    });
 }

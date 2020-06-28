@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Anime {
-    mal_id: u32,
+    pub mal_id: u32,
     title: String,
     #[serde(rename = "type")]
     anime_type: String,
