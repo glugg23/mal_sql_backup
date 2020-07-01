@@ -3,7 +3,7 @@ use diesel::{Connection, RunQueryDsl, SqliteConnection};
 use dotenv::dotenv;
 use mal_backup_core::schema;
 use mal_backup_core::session::set_session_cookie;
-use mal_backup_core::{get_anime_list, get_user_stats};
+use mal_backup_core::{get_anime_list, get_manga_list, get_user_stats};
 use reqwest::blocking::Client;
 use std::env;
 
@@ -51,6 +51,15 @@ fn main() {
     for a in anime_list.iter() {
         diesel::insert_into(schema::anime::table)
             .values(a)
+            .execute(&connection)
+            .unwrap();
+    }
+
+    let manga_list = get_manga_list(&user, &client).unwrap();
+
+    for m in manga_list.iter() {
+        diesel::insert_into(schema::manga::table)
+            .values(m)
             .execute(&connection)
             .unwrap();
     }
