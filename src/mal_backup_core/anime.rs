@@ -1,21 +1,24 @@
+use crate::schema::anime as AnimeTable;
+use diesel::Insertable;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Insertable)]
+#[table_name = "AnimeTable"]
 pub struct Anime {
-    pub mal_id: u32,
+    pub mal_id: i32,
     title: String,
     #[serde(rename = "type")]
     anime_type: String,
-    pub watching_status: u8,
-    score: u8,
-    watched_episodes: u32,
-    total_episodes: u32,
-    airing_status: u8,
+    pub watching_status: i32,
+    score: i32,
+    watched_episodes: i32,
+    total_episodes: i32,
+    airing_status: i32,
     is_rewatching: bool,
     tags: Option<String>,
     start_date: Option<String>,
     end_date: Option<String>,
     watch_start_date: Option<String>,
     watch_end_date: Option<String>,
-    days: Option<u32>,
+    days: Option<i32>,
 }

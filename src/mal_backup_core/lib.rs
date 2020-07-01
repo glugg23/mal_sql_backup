@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate diesel;
+
 use crate::anime::Anime;
 use crate::chapter::Chapter;
 use crate::episode::Episode;
@@ -12,6 +15,7 @@ pub mod anime;
 pub mod chapter;
 pub mod episode;
 pub mod manga;
+pub mod schema;
 pub mod session;
 pub mod user;
 
