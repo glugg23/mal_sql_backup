@@ -1,57 +1,51 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct User {
-    user_id: u32,
+    pub user_id: i32,
     pub username: String,
     pub anime_stats: AnimeStats,
     pub manga_stats: MangaStats,
-    favorites: Favorites,
+    pub favorites: Favorites,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct AnimeStats {
-    days_watched: f64,
-    mean_score: f64,
-    watching: u32,
-    completed: u32,
-    on_hold: u32,
-    dropped: u32,
-    plan_to_watch: u32,
-    pub total_entries: u32,
-    rewatched: u32,
-    episodes_watched: u32,
+    pub days_watched: f64,
+    pub mean_score: f64,
+    pub watching: i32,
+    pub completed: i32,
+    pub on_hold: i32,
+    pub dropped: i32,
+    pub plan_to_watch: i32,
+    pub total_entries: i32,
+    pub rewatched: i32,
+    pub episodes_watched: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct MangaStats {
-    days_read: f64,
-    mean_score: f64,
-    reading: u32,
-    completed: u32,
-    on_hold: u32,
-    dropped: u32,
-    plan_to_read: u32,
-    pub total_entries: u32,
-    reread: u32,
-    chapters_read: u32,
-    volumes_read: u32,
+    pub days_read: f64,
+    pub mean_score: f64,
+    pub reading: i32,
+    pub completed: i32,
+    pub on_hold: i32,
+    pub dropped: i32,
+    pub plan_to_read: i32,
+    pub total_entries: i32,
+    pub reread: i32,
+    pub chapters_read: i32,
+    pub volumes_read: i32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Favorites {
-    anime: Vec<FavoriteAnime>,
-    manga: Vec<FavoriteManga>,
+    pub anime: Vec<Favorite>,
+    pub manga: Vec<Favorite>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct FavoriteAnime {
-    mal_id: u32,
-    name: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct FavoriteManga {
-    mal_id: u32,
+#[derive(Clone, Debug, Deserialize)]
+pub struct Favorite {
+    pub mal_id: i32,
     name: String,
 }

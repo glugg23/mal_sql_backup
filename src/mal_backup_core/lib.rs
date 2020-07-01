@@ -15,6 +15,7 @@ pub mod anime;
 pub mod chapter;
 pub mod episode;
 pub mod manga;
+pub mod models;
 pub mod schema;
 pub mod session;
 pub mod user;

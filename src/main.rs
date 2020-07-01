@@ -1,6 +1,7 @@
 use clap::{App, Arg};
 use diesel::{Connection, RunQueryDsl, SqliteConnection};
 use dotenv::dotenv;
+use mal_backup_core::models::{self, FavoriteAnime, FavoriteManga};
 use mal_backup_core::schema;
 use mal_backup_core::session::set_session_cookie;
 use mal_backup_core::{
@@ -47,6 +48,39 @@ fn main() {
     set_session_cookie(&client, username, password).expect("Failed to get session");
 
     let user = get_user_stats(username, &client).unwrap();
+
+    let user_db: models::User = user.clone().into();
+    let mut favourite_anime = Vec::new();
+    let mut favourite_manga = Vec::new();
+
+    for a in &user.favorites.anime {
+        favourite_anime.push(FavoriteAnime {
+            user_id: user.user_id,
+            mal_id: a.mal_id,
+        });
+    }
+
+    for m in &user.favorites.manga {
+        favourite_manga.push(FavoriteManga {
+            user_id: user.user_id,
+            mal_id: m.mal_id,
+        });
+    }
+
+    diesel::insert_into(schema::users::table)
+        .values(user_db)
+        .execute(&connection)
+        .unwrap();
+
+    diesel::insert_into(schema::favourite_anime::table)
+        .values(favourite_anime)
+        .execute(&connection)
+        .unwrap();
+
+    diesel::insert_into(schema::favourite_manga::table)
+        .values(favourite_manga)
+        .execute(&connection)
+        .unwrap();
 
     let anime_list = get_anime_list(&user, &client).unwrap();
 

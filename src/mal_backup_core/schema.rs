@@ -37,6 +37,20 @@ table! {
 }
 
 table! {
+    favourite_anime (user_id, mal_id) {
+        user_id -> Integer,
+        mal_id -> Integer,
+    }
+}
+
+table! {
+    favourite_manga (user_id, mal_id) {
+        user_id -> Integer,
+        mal_id -> Integer,
+    }
+}
+
+table! {
     manga (mal_id) {
         mal_id -> Integer,
         title -> Text,
@@ -58,7 +72,47 @@ table! {
     }
 }
 
+table! {
+    users (user_id) {
+        user_id -> Integer,
+        username -> Text,
+        days_watched -> Double,
+        anime_mean_score -> Double,
+        anime_watching -> Integer,
+        anime_completed -> Integer,
+        anime_on_hold -> Integer,
+        anime_dropped -> Integer,
+        anime_plan_to_watch -> Integer,
+        anime_total_entries -> Integer,
+        anime_rewatched -> Integer,
+        episodes_watched -> Integer,
+        days_read -> Double,
+        manga_mean_score -> Double,
+        manga_reading -> Integer,
+        manga_completed -> Integer,
+        manga_on_hold -> Integer,
+        manga_dropped -> Integer,
+        manga_plan_to_read -> Integer,
+        manga_total_entries -> Integer,
+        manga_reread -> Integer,
+        chapters_read -> Integer,
+        volumes_read -> Integer,
+    }
+}
+
 joinable!(chapters -> manga (manga_id));
 joinable!(episodes -> anime (anime_id));
+joinable!(favourite_anime -> anime (mal_id));
+joinable!(favourite_anime -> users (user_id));
+joinable!(favourite_manga -> manga (mal_id));
+joinable!(favourite_manga -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(anime, chapters, episodes, manga,);
+allow_tables_to_appear_in_same_query!(
+    anime,
+    chapters,
+    episodes,
+    favourite_anime,
+    favourite_manga,
+    manga,
+    users,
+);
