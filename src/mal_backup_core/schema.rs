@@ -19,6 +19,15 @@ table! {
 }
 
 table! {
+    chapters (id) {
+        id -> Integer,
+        manga_id -> Integer,
+        number -> Integer,
+        read_on -> Timestamp,
+    }
+}
+
+table! {
     episodes (id) {
         id -> Integer,
         anime_id -> Integer,
@@ -49,6 +58,7 @@ table! {
     }
 }
 
+joinable!(chapters -> manga (manga_id));
 joinable!(episodes -> anime (anime_id));
 
-allow_tables_to_appear_in_same_query!(anime, episodes, manga,);
+allow_tables_to_appear_in_same_query!(anime, chapters, episodes, manga,);
