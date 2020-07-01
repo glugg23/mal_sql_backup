@@ -3,7 +3,7 @@ use diesel::{Connection, RunQueryDsl, SqliteConnection};
 use dotenv::dotenv;
 use mal_backup_core::schema;
 use mal_backup_core::session::set_session_cookie;
-use mal_backup_core::{get_anime_list, get_manga_list, get_user_stats};
+use mal_backup_core::{get_anime_episodes, get_anime_list, get_manga_list, get_user_stats};
 use reqwest::blocking::Client;
 use std::env;
 
@@ -36,7 +36,7 @@ fn main() {
 
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();
-    let _skip_planned = args.is_present("skip-planned");
+    let skip_planned = args.is_present("skip-planned");
 
     let connection = get_db_connection();
 
@@ -53,6 +53,17 @@ fn main() {
             .values(a)
             .execute(&connection)
             .unwrap();
+
+        if !(skip_planned && a.watching_status == 6) {
+            let episodes = get_anime_episodes(a.mal_id, &client).unwrap();
+
+            for e in episodes.iter() {
+                diesel::insert_into(schema::episodes::table)
+                    .values(e)
+                    .execute(&connection)
+                    .unwrap();
+            }
+        }
     }
 
     let manga_list = get_manga_list(&user, &client).unwrap();

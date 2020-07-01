@@ -19,6 +19,15 @@ table! {
 }
 
 table! {
+    episodes (id) {
+        id -> Integer,
+        anime_id -> Integer,
+        number -> Integer,
+        watched_on -> Timestamp,
+    }
+}
+
+table! {
     manga (mal_id) {
         mal_id -> Integer,
         title -> Text,
@@ -40,4 +49,6 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(anime, manga,);
+joinable!(episodes -> anime (anime_id));
+
+allow_tables_to_appear_in_same_query!(anime, episodes, manga,);

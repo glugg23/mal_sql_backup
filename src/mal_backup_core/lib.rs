@@ -73,7 +73,7 @@ pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error>
     Ok(manga_list)
 }
 
-pub fn get_anime_episodes(anime_id: u32, client: &Client) -> Result<Vec<Episode>, Error> {
+pub fn get_anime_episodes(anime_id: i32, client: &Client) -> Result<Vec<Episode>, Error> {
     let res = client
         .get(format!("{}?detailedaid={}", MAL_URL, anime_id).as_str())
         .send()?;
