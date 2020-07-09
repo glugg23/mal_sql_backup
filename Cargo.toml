@@ -4,14 +4,6 @@ version = "0.1.0"
 authors = ["Max Leonhardt <m.leonhardt424@gmail.com>"]
 edition = "2018"
 
-[lib]
-name = "mal_backup_core"
-path = "src/mal_backup_core/lib.rs"
-
-[[bin]]
-name = "mal_sql_backup"
-path = "src/main.rs"
-
 [dependencies]
 chrono = "0.4.11"
 clap = "2.33.1"

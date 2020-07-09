@@ -1,10 +1,10 @@
 use clap::{App, Arg};
 use diesel::{Connection, RunQueryDsl, SqliteConnection};
 use dotenv::dotenv;
-use mal_backup_core::models::{self, FavoriteAnime, FavoriteManga};
-use mal_backup_core::schema;
-use mal_backup_core::session::set_session_cookie;
-use mal_backup_core::{
+use mal_sql_backup::models::{self, FavoriteAnime, FavoriteManga};
+use mal_sql_backup::schema;
+use mal_sql_backup::session::set_session_cookie;
+use mal_sql_backup::{
     get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats,
 };
 use reqwest::blocking::Client;
