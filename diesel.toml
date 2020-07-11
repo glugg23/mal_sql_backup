@@ -2,4 +2,4 @@
 # see diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "src/mal_backup_core/schema.rs"
+file = "src/schema.rs"
