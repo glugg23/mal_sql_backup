@@ -1,7 +1,10 @@
-use crate::schema::episodes;
+use std::fmt::{self, Display, Formatter};
+
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use diesel::Insertable;
-use std::fmt::{Display, Formatter, Result};
+use diesel::{Insertable, RunQueryDsl, SqliteConnection};
+use diesel::result::Error;
+
+use crate::schema::episodes;
 
 #[derive(Debug, Insertable)]
 pub struct Episode {
@@ -28,10 +31,18 @@ impl Episode {
             watched_on,
         }
     }
+
+    pub fn save(&self, connection: &SqliteConnection) -> Result<(), Error> {
+        diesel::insert_into(episodes::table)
+            .values(self)
+            .execute(connection)?;
+
+        Ok(())
+    }
 }
 
 impl Display for Episode {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "Ep {}, watched on {} at {}",

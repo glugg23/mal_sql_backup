@@ -1,6 +1,7 @@
+use diesel::Insertable;
+
 use crate::schema::{favourite_anime, favourite_manga, users};
 use crate::user;
-use diesel::Insertable;
 
 #[derive(Insertable)]
 #[table_name = "users"]
@@ -30,11 +31,11 @@ pub struct User {
     volumes_read: i32,
 }
 
-impl From<user::User> for User {
-    fn from(user: user::User) -> Self {
+impl From<&user::User> for User {
+    fn from(user: &user::User) -> Self {
         User {
             user_id: user.user_id,
-            username: user.username,
+            username: user.username.clone(),
             days_watched: user.anime_stats.days_watched,
             anime_mean_score: user.anime_stats.mean_score,
             anime_watching: user.anime_stats.watching,
@@ -63,13 +64,25 @@ impl From<user::User> for User {
 #[derive(Insertable)]
 #[table_name = "favourite_anime"]
 pub struct FavoriteAnime {
-    pub mal_id: i32,
-    pub user_id: i32,
+    mal_id: i32,
+    user_id: i32,
+}
+
+impl FavoriteAnime {
+    pub fn new(mal_id: i32, user_id: i32) -> Self {
+        FavoriteAnime { mal_id, user_id }
+    }
 }
 
 #[derive(Insertable)]
 #[table_name = "favourite_manga"]
 pub struct FavoriteManga {
-    pub mal_id: i32,
-    pub user_id: i32,
+    mal_id: i32,
+    user_id: i32,
+}
+
+impl FavoriteManga {
+    pub fn new(mal_id: i32, user_id: i32) -> Self {
+        FavoriteManga { mal_id, user_id }
+    }
 }

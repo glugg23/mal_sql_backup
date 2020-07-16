@@ -1,21 +1,21 @@
+use std::env;
+use std::process::exit;
+
 use clap::{App, Arg};
-use diesel::{Connection, RunQueryDsl, SqliteConnection};
+use diesel::{Connection, ConnectionError, SqliteConnection};
 use dotenv::dotenv;
-use mal_sql_backup::models::{self, FavoriteAnime, FavoriteManga};
-use mal_sql_backup::schema;
-use mal_sql_backup::session::set_session_cookie;
+use reqwest::blocking::Client;
+
 use mal_sql_backup::{
     get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats,
 };
-use reqwest::blocking::Client;
-use std::env;
+use mal_sql_backup::session::set_session_cookie;
 
-fn get_db_connection() -> SqliteConnection {
+pub fn get_db_connection() -> Result<SqliteConnection, ConnectionError> {
     dotenv().ok();
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     SqliteConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
 }
 
 fn main() {
@@ -41,84 +41,41 @@ fn main() {
     let password = args.value_of("password").unwrap();
     let skip_planned = args.is_present("skip-planned");
 
-    let connection = get_db_connection();
+    let connection = get_db_connection().unwrap_or_else(|_| exit(1));
 
     let client = Client::builder().cookie_store(true).build().unwrap();
 
-    set_session_cookie(&client, username, password).expect("Failed to get session");
+    set_session_cookie(&client, username, password).unwrap_or_else(|_| exit(1));
 
-    let user = get_user_stats(username, &client).unwrap();
+    let user = get_user_stats(username, &client).unwrap_or_else(|_| exit(1));
 
-    let user_db: models::User = user.clone().into();
-    let mut favourite_anime = Vec::new();
-    let mut favourite_manga = Vec::new();
+    user.save(&connection).unwrap_or_else(|_| exit(1));
 
-    for a in &user.favorites.anime {
-        favourite_anime.push(FavoriteAnime {
-            user_id: user.user_id,
-            mal_id: a.mal_id,
-        });
-    }
-
-    for m in &user.favorites.manga {
-        favourite_manga.push(FavoriteManga {
-            user_id: user.user_id,
-            mal_id: m.mal_id,
-        });
-    }
-
-    diesel::insert_into(schema::users::table)
-        .values(user_db)
-        .execute(&connection)
-        .unwrap();
-
-    diesel::insert_into(schema::favourite_anime::table)
-        .values(favourite_anime)
-        .execute(&connection)
-        .unwrap();
-
-    diesel::insert_into(schema::favourite_manga::table)
-        .values(favourite_manga)
-        .execute(&connection)
-        .unwrap();
-
-    let anime_list = get_anime_list(&user, &client).unwrap();
+    let anime_list = get_anime_list(&user, &client).unwrap_or_else(|_| exit(1));
 
     for a in anime_list.iter() {
-        diesel::insert_into(schema::anime::table)
-            .values(a)
-            .execute(&connection)
-            .unwrap();
+        a.save(&connection).unwrap_or_else(|_| exit(1));
 
         if !(skip_planned && a.watching_status == 6) {
-            let episodes = get_anime_episodes(a.mal_id, &client).unwrap();
+            let episodes = get_anime_episodes(a.mal_id, &client).unwrap_or_else(|_| exit(1));
 
-            for e in episodes.iter() {
-                diesel::insert_into(schema::episodes::table)
-                    .values(e)
-                    .execute(&connection)
-                    .unwrap();
-            }
+            episodes.iter().for_each(|e| {
+                e.save(&connection).unwrap_or_else(|_| exit(1));
+            });
         }
     }
 
-    let manga_list = get_manga_list(&user, &client).unwrap();
+    let manga_list = get_manga_list(&user, &client).unwrap_or_else(|_| exit(1));
 
     for m in manga_list.iter() {
-        diesel::insert_into(schema::manga::table)
-            .values(m)
-            .execute(&connection)
-            .unwrap();
+        m.save(&connection).unwrap_or_else(|_| exit(1));
 
         if !(skip_planned && m.reading_status == 6) {
             let chapters = get_manga_chapters(m.mal_id, &client).unwrap();
 
-            for c in chapters.iter() {
-                diesel::insert_into(schema::chapters::table)
-                    .values(c)
-                    .execute(&connection)
-                    .unwrap();
-            }
+            chapters.iter().for_each(|c| {
+                c.save(&connection).unwrap_or_else(|_| exit(1));
+            });
         }
     }
 }

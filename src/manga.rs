@@ -1,6 +1,8 @@
-use crate::schema::manga as MangaTable;
-use diesel::Insertable;
+use diesel::{Insertable, RunQueryDsl, SqliteConnection};
+use diesel::result::Error;
 use serde::Deserialize;
+
+use crate::schema::manga as MangaTable;
 
 #[derive(Debug, Deserialize, Insertable)]
 #[table_name = "MangaTable"]
@@ -23,4 +25,14 @@ pub struct Manga {
     read_start_date: Option<String>,
     read_end_date: Option<String>,
     days: Option<i32>,
+}
+
+impl Manga {
+    pub fn save(&self, connection: &SqliteConnection) -> Result<(), Error> {
+        diesel::insert_into(MangaTable::table)
+            .values(self)
+            .execute(connection)?;
+
+        Ok(())
+    }
 }
