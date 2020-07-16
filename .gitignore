@@ -1,4 +1,5 @@
-mal.sqlite3
+*.sqlite3
+*.log
 
 # Created by https://www.toptal.com/developers/gitignore/api/rust,macos,windows,linux,clion+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=rust,macos,windows,linux,clion+all
