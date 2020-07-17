@@ -29,6 +29,7 @@ CREATE TABLE favourite_anime
 (
     user_id INTEGER NOT NULL,
     mal_id  INTEGER NOT NULL,
+    rank    INTEGER NOT NULL,
     PRIMARY KEY (user_id, mal_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     FOREIGN KEY (mal_id) REFERENCES anime (mal_id)
@@ -38,6 +39,7 @@ CREATE TABLE favourite_manga
 (
     user_id INTEGER NOT NULL,
     mal_id  INTEGER NOT NULL,
+    rank    INTEGER NOT NULL,
     PRIMARY KEY (user_id, mal_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     FOREIGN KEY (mal_id) REFERENCES manga (mal_id)

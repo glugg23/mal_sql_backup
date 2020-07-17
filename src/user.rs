@@ -21,7 +21,7 @@ impl User {
             .anime
             .iter()
             .enumerate()
-            .map(|(_i, a)| FavoriteAnime::new(a.mal_id, self.user_id))
+            .map(|(i, a)| FavoriteAnime::new(a.mal_id, self.user_id, i + 1))
             .collect();
 
         let favourite_manga: Vec<_> = self
@@ -29,7 +29,7 @@ impl User {
             .manga
             .iter()
             .enumerate()
-            .map(|(_i, m)| FavoriteManga::new(m.mal_id, self.user_id))
+            .map(|(i, m)| FavoriteManga::new(m.mal_id, self.user_id, i + 1))
             .collect();
 
         let user: models::User = self.into();

@@ -40,6 +40,7 @@ table! {
     favourite_anime (user_id, mal_id) {
         user_id -> Integer,
         mal_id -> Integer,
+        rank -> Integer,
     }
 }
 
@@ -47,6 +48,7 @@ table! {
     favourite_manga (user_id, mal_id) {
         user_id -> Integer,
         mal_id -> Integer,
+        rank -> Integer,
     }
 }
 

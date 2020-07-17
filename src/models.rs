@@ -66,11 +66,12 @@ impl From<&user::User> for User {
 pub struct FavoriteAnime {
     mal_id: i32,
     user_id: i32,
+    rank: i32,
 }
 
 impl FavoriteAnime {
-    pub fn new(mal_id: i32, user_id: i32) -> Self {
-        FavoriteAnime { mal_id, user_id }
+    pub fn new(mal_id: i32, user_id: i32, rank: usize) -> Self {
+        FavoriteAnime { mal_id, user_id, rank: rank as i32 }
     }
 }
 
@@ -79,10 +80,11 @@ impl FavoriteAnime {
 pub struct FavoriteManga {
     mal_id: i32,
     user_id: i32,
+    rank: i32,
 }
 
 impl FavoriteManga {
-    pub fn new(mal_id: i32, user_id: i32) -> Self {
-        FavoriteManga { mal_id, user_id }
+    pub fn new(mal_id: i32, user_id: i32, rank: usize) -> Self {
+        FavoriteManga { mal_id, user_id, rank: rank as i32 }
     }
 }
