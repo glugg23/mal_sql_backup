@@ -8,7 +8,7 @@ use crate::schema::anime as AnimeTable;
 #[table_name = "AnimeTable"]
 pub struct Anime {
     pub mal_id: i32,
-    title: String,
+    pub title: String,
     #[serde(rename = "type")]
     anime_type: String,
     pub watching_status: i32,

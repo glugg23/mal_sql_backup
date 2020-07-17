@@ -8,7 +8,7 @@ use crate::schema::manga as MangaTable;
 #[table_name = "MangaTable"]
 pub struct Manga {
     pub mal_id: i32,
-    title: String,
+    pub title: String,
     #[serde(rename = "type")]
     manga_type: String,
     pub reading_status: i32,

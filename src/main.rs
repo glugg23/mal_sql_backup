@@ -57,43 +57,73 @@ fn main() {
     let password = args.value_of("password").unwrap();
     let skip_planned = args.is_present("skip-planned");
 
-    let connection = get_db_connection().unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
+    let connection = match get_db_connection() {
+        Ok(c) => {
+            info!("Connected to database");
+            c
+        }
+        Err(e) => {
+            error!("{}", e);
+            exit(1);
+        }
+    };
 
-    run_pending_migrations(&connection).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
+    match run_pending_migrations(&connection) {
+        Ok(_) => info!("Ran pending database migrations"),
+        Err(e) => {
+            error!("{}", e);
+            exit(1);
+        }
+    };
 
     let client = Client::builder().cookie_store(true).build().unwrap();
 
-    set_session_cookie(&client, username, password).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
-
-    let user = get_user_stats(username, &client).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
-
-    user.save(&connection).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
-
-    let anime_list = get_anime_list(&user, &client).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
-
-    for a in anime_list.iter() {
-        a.save(&connection).unwrap_or_else(|e| {
+    match set_session_cookie(&client, username, password) {
+        Ok(_) => info!("Logged in as '{}'", username),
+        Err(e) => {
             error!("{}", e);
             exit(1);
-        });
+        }
+    };
+
+    let user = match get_user_stats(username, &client) {
+        Ok(u) => {
+            info!("Got user stats for '{}'", u.username);
+            u
+        }
+        Err(e) => {
+            error!("{}", e);
+            exit(1);
+        }
+    };
+
+    match user.save(&connection) {
+        Ok(_) => info!("Saved user stats to database"),
+        Err(e) => {
+            error!("{}", e);
+            exit(1);
+        }
+    };
+
+    let anime_list = match get_anime_list(&user, &client) {
+        Ok(a) => {
+            info!("Got anime list for '{}'", user.username);
+            a
+        }
+        Err(e) => {
+            error!("{}", e);
+            exit(1);
+        }
+    };
+
+    for a in anime_list.iter() {
+        match a.save(&connection) {
+            Ok(_) => info!("Saved anime '{}' to database", a.title),
+            Err(e) => {
+                error!("{}", e);
+                exit(1);
+            }
+        };
 
         if !(skip_planned && a.watching_status == 6) {
             let episodes = get_anime_episodes(a.mal_id, &client).unwrap_or_else(|e| {
@@ -107,19 +137,34 @@ fn main() {
                     exit(1);
                 });
             });
+
+            info!(
+                "Saved {} episodes for anime '{}' to database",
+                episodes.len(),
+                a.title
+            );
         }
     }
 
-    let manga_list = get_manga_list(&user, &client).unwrap_or_else(|e| {
-        error!("{}", e);
-        exit(1);
-    });
-
-    for m in manga_list.iter() {
-        m.save(&connection).unwrap_or_else(|e| {
+    let manga_list = match get_manga_list(&user, &client) {
+        Ok(m) => {
+            info!("Got manga list for '{}'", user.username);
+            m
+        }
+        Err(e) => {
             error!("{}", e);
             exit(1);
-        });
+        }
+    };
+
+    for m in manga_list.iter() {
+        match m.save(&connection) {
+            Ok(_) => info!("Saved manga '{}' to database", m.title),
+            Err(e) => {
+                error!("{}", e);
+                exit(1);
+            }
+        };
 
         if !(skip_planned && m.reading_status == 6) {
             let chapters = get_manga_chapters(m.mal_id, &client).unwrap_or_else(|e| {
@@ -133,6 +178,12 @@ fn main() {
                     exit(1);
                 });
             });
+
+            info!(
+                "Saved {} chapters for manga '{}' to database",
+                chapters.len(),
+                m.title
+            );
         }
     }
 }
