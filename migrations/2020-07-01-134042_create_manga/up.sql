@@ -16,5 +16,6 @@ CREATE TABLE manga
     end_date          VARCHAR NULLABLE,
     read_start_date   VARCHAR NULLABLE,
     read_end_date     VARCHAR NULLABLE,
-    days              INTEGER NULLABLE
+    days              INTEGER NULLABLE,
+    FOREIGN KEY (reading_status) REFERENCES statuses (id)
 );

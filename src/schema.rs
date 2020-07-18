@@ -75,6 +75,14 @@ table! {
 }
 
 table! {
+    statuses (id) {
+        id -> Integer,
+        anime_status -> Text,
+        manga_status -> Text,
+    }
+}
+
+table! {
     users (user_id) {
         user_id -> Integer,
         username -> Text,
@@ -102,12 +110,14 @@ table! {
     }
 }
 
+joinable!(anime -> statuses (watching_status));
 joinable!(chapters -> manga (manga_id));
 joinable!(episodes -> anime (anime_id));
 joinable!(favourite_anime -> anime (mal_id));
 joinable!(favourite_anime -> users (user_id));
 joinable!(favourite_manga -> manga (mal_id));
 joinable!(favourite_manga -> users (user_id));
+joinable!(manga -> statuses (reading_status));
 
 allow_tables_to_appear_in_same_query!(
     anime,
@@ -116,5 +126,6 @@ allow_tables_to_appear_in_same_query!(
     favourite_anime,
     favourite_manga,
     manga,
+    statuses,
     users,
 );
