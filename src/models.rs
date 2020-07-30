@@ -71,7 +71,11 @@ pub struct FavoriteAnime {
 
 impl FavoriteAnime {
     pub fn new(mal_id: i32, user_id: i32, rank: usize) -> Self {
-        FavoriteAnime { mal_id, user_id, rank: rank as i32 }
+        FavoriteAnime {
+            mal_id,
+            user_id,
+            rank: rank as i32,
+        }
     }
 }
 
@@ -85,6 +89,10 @@ pub struct FavoriteManga {
 
 impl FavoriteManga {
     pub fn new(mal_id: i32, user_id: i32, rank: usize) -> Self {
-        FavoriteManga { mal_id, user_id, rank: rank as i32 }
+        FavoriteManga {
+            mal_id,
+            user_id,
+            rank: rank as i32,
+        }
     }
 }

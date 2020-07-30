@@ -1,8 +1,8 @@
 use std::fmt::{self, Display, Formatter};
 
 use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
-use diesel::{Insertable, RunQueryDsl, SqliteConnection};
 use diesel::result::Error;
+use diesel::{Insertable, RunQueryDsl, SqliteConnection};
 
 use crate::schema::chapters;
 

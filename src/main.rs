@@ -12,10 +12,10 @@ use dotenv::dotenv;
 use reqwest::blocking::Client;
 use simplelog::*;
 
+use mal_sql_backup::session::set_session_cookie;
 use mal_sql_backup::{
     get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats,
 };
-use mal_sql_backup::session::set_session_cookie;
 
 pub fn get_db_connection() -> Result<SqliteConnection, ConnectionError> {
     dotenv().ok();
@@ -51,7 +51,7 @@ fn main() {
             File::create("mal.log").unwrap(),
         ),
     ])
-        .unwrap();
+    .unwrap();
 
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();

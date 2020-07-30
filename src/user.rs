@@ -1,5 +1,5 @@
-use diesel::{RunQueryDsl, SqliteConnection};
 use diesel::result::Error;
+use diesel::{RunQueryDsl, SqliteConnection};
 use serde::Deserialize;
 
 use crate::models::{self, FavoriteAnime, FavoriteManga};

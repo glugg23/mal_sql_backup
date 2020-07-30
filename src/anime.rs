@@ -1,5 +1,5 @@
-use diesel::{Insertable, RunQueryDsl, SqliteConnection};
 use diesel::result::Error;
+use diesel::{Insertable, RunQueryDsl, SqliteConnection};
 use serde::Deserialize;
 
 use crate::schema::anime as AnimeTable;
