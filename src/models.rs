@@ -8,6 +8,7 @@ use crate::user;
 pub struct User {
     user_id: i32,
     username: String,
+    joined: String,
     days_watched: f64,
     anime_mean_score: f64,
     anime_watching: i32,
@@ -36,6 +37,7 @@ impl From<&user::User> for User {
         User {
             user_id: user.user_id,
             username: user.username.clone(),
+            joined: user.joined.clone(),
             days_watched: user.anime_stats.days_watched,
             anime_mean_score: user.anime_stats.mean_score,
             anime_watching: user.anime_stats.watching,

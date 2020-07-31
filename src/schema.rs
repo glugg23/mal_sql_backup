@@ -86,6 +86,7 @@ table! {
     users (user_id) {
         user_id -> Integer,
         username -> Text,
+        joined -> Text,
         days_watched -> Double,
         anime_mean_score -> Double,
         anime_watching -> Integer,

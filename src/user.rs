@@ -9,6 +9,7 @@ use crate::schema::{favourite_anime, favourite_manga, users};
 pub struct User {
     pub user_id: i32,
     pub username: String,
+    pub joined: String,
     pub anime_stats: AnimeStats,
     pub manga_stats: MangaStats,
     pub favorites: Favorites,

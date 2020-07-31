@@ -2,6 +2,7 @@ CREATE TABLE users
 (
     user_id             INTEGER NOT NULL PRIMARY KEY,
     username            VARCHAR NOT NULL,
+    joined              VARCHAR NOT NULL,
     days_watched        DOUBLE  NOT NULL,
     anime_mean_score    DOUBLE  NOT NULL,
     anime_watching      INTEGER NOT NULL,
