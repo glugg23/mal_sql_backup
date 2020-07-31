@@ -101,3 +101,23 @@ pub fn get_manga_chapters(manga_id: i32, client: &Client) -> Result<Vec<Chapter>
         .map(|e| Chapter::new(manga_id, e.text().next().unwrap()))
         .collect())
 }
+
+#[derive(PartialEq)]
+pub enum Skip {
+    None,
+    All,
+    Planned,
+}
+
+impl From<&str> for Skip {
+    fn from(string: &str) -> Self {
+        let string = string.to_lowercase();
+
+        match string.as_str() {
+            "none" => Skip::None,
+            "all" => Skip::All,
+            "planned" => Skip::Planned,
+            _ => panic!(format!("Invalid conversion from '{}' to Skip enum", string)),
+        }
+    }
+}

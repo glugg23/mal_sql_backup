@@ -14,7 +14,7 @@ use simplelog::*;
 
 use mal_sql_backup::session::set_session_cookie;
 use mal_sql_backup::{
-    get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats,
+    get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats, Skip,
 };
 
 pub fn get_db_connection() -> Result<SqliteConnection, ConnectionError> {
@@ -31,16 +31,26 @@ fn main() {
         .arg(
             Arg::with_name("username")
                 .short("u")
+                .long("--username")
                 .takes_value(true)
                 .required(true),
         )
         .arg(
             Arg::with_name("password")
                 .short("p")
+                .long("--password")
                 .takes_value(true)
-                .required(true),
+                .required_ifs(&[("skip", "none"), ("skip", "planned")]),
         )
-        .arg(Arg::with_name("skip-planned"))
+        .arg(
+            Arg::with_name("skip")
+                .short("S")
+                .long("--skip")
+                .takes_value(true)
+                .possible_values(&["none", "all", "planned"])
+                .default_value("planned")
+                .case_insensitive(true),
+        )
         .get_matches();
 
     CombinedLogger::init(vec![
@@ -54,8 +64,8 @@ fn main() {
     .unwrap();
 
     let username = args.value_of("username").unwrap();
-    let password = args.value_of("password").unwrap();
-    let skip_planned = args.is_present("skip-planned");
+    let skip: Skip = args.value_of("skip").unwrap().into();
+    let password = args.value_of("password");
 
     let connection = match get_db_connection() {
         Ok(c) => {
@@ -78,13 +88,18 @@ fn main() {
 
     let client = Client::builder().cookie_store(true).build().unwrap();
 
-    match set_session_cookie(&client, username, password) {
-        Ok(_) => info!("Logged in as '{}'", username),
-        Err(e) => {
-            error!("{}", e);
-            exit(1);
+    match password {
+        Some(p) => {
+            match set_session_cookie(&client, username, p) {
+                Ok(_) => info!("Logged in as '{}'", username),
+                Err(e) => {
+                    error!("{}", e);
+                    exit(1);
+                }
+            };
         }
-    };
+        None => (),
+    }
 
     let user = match get_user_stats(username, &client) {
         Ok(u) => {
@@ -125,7 +140,7 @@ fn main() {
             }
         };
 
-        if !(skip_planned && a.watching_status == 6) {
+        if skip == Skip::None || (skip == Skip::Planned && a.watching_status == 6) {
             let episodes = get_anime_episodes(a.mal_id, &client).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
@@ -166,7 +181,7 @@ fn main() {
             }
         };
 
-        if !(skip_planned && m.reading_status == 6) {
+        if skip == Skip::None || (skip == Skip::Planned && m.reading_status == 6) {
             let chapters = get_manga_chapters(m.mal_id, &client).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
