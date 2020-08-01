@@ -13,6 +13,7 @@ use serde::Deserialize;
 
 pub mod anime;
 pub mod chapter;
+pub mod detail;
 pub mod episode;
 pub mod manga;
 pub mod models;
@@ -118,6 +119,27 @@ impl From<&str> for Skip {
             "all" => Skip::All,
             "planned" => Skip::Planned,
             _ => panic!(format!("Invalid conversion from '{}' to Skip enum", string)),
+        }
+    }
+}
+
+#[derive(PartialEq)]
+pub enum Detail {
+    None,
+    All,
+}
+
+impl From<&str> for Detail {
+    fn from(string: &str) -> Self {
+        let string = string.to_lowercase();
+
+        match string.as_str() {
+            "none" => Detail::None,
+            "all" => Detail::All,
+            _ => panic!(format!(
+                "Invalid conversion from '{}' to Detail enum",
+                string
+            )),
         }
     }
 }

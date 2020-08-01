@@ -19,6 +19,24 @@ table! {
 }
 
 table! {
+    anime_details (mal_id) {
+        mal_id -> Integer,
+        priority -> Integer,
+        storage -> Nullable<Integer>,
+        times_rewatched -> Integer,
+        rewatch_value -> Nullable<Integer>,
+        comments -> Nullable<Text>,
+    }
+}
+
+table! {
+    anime_storage (id) {
+        id -> Integer,
+        description -> Text,
+    }
+}
+
+table! {
     chapters (id) {
         id -> Integer,
         manga_id -> Integer,
@@ -75,6 +93,20 @@ table! {
 }
 
 table! {
+    priorities (id) {
+        id -> Integer,
+        description -> Text,
+    }
+}
+
+table! {
+    repeat_value (id) {
+        id -> Integer,
+        description -> Text,
+    }
+}
+
+table! {
     statuses (id) {
         id -> Integer,
         anime_status -> Text,
@@ -112,6 +144,10 @@ table! {
 }
 
 joinable!(anime -> statuses (watching_status));
+joinable!(anime_details -> anime (mal_id));
+joinable!(anime_details -> anime_storage (storage));
+joinable!(anime_details -> priorities (priority));
+joinable!(anime_details -> repeat_value (rewatch_value));
 joinable!(chapters -> manga (manga_id));
 joinable!(episodes -> anime (anime_id));
 joinable!(favourite_anime -> anime (mal_id));
@@ -122,11 +158,15 @@ joinable!(manga -> statuses (reading_status));
 
 allow_tables_to_appear_in_same_query!(
     anime,
+    anime_details,
+    anime_storage,
     chapters,
     episodes,
     favourite_anime,
     favourite_manga,
     manga,
+    priorities,
+    repeat_value,
     statuses,
     users,
 );
