@@ -12,7 +12,7 @@ use dotenv::dotenv;
 use reqwest::blocking::Client;
 use simplelog::*;
 
-use mal_sql_backup::detail::AnimeDetail;
+use mal_sql_backup::detail::{AnimeDetail, MangaDetail};
 use mal_sql_backup::session::set_session_cookie;
 use mal_sql_backup::{
     get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats, Detail,
@@ -213,6 +213,27 @@ fn main() {
                 exit(1);
             }
         };
+
+        if detail == Detail::All {
+            let details = match MangaDetail::get(&client, m.mal_id) {
+                Ok(d) => {
+                    info!("Got detailed info for '{}'", m.title);
+                    d
+                }
+                Err(e) => {
+                    error!("{}", e);
+                    exit(1);
+                }
+            };
+
+            match details.save(&connection) {
+                Ok(_) => info!("Saved detailed info for '{}' to database", m.title),
+                Err(e) => {
+                    error!("{}", e);
+                    exit(1);
+                }
+            };
+        }
 
         if skip == Skip::None || (skip == Skip::Planned && m.reading_status != 6) {
             let chapters = get_manga_chapters(m.mal_id, &client).unwrap_or_else(|e| {

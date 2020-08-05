@@ -93,6 +93,24 @@ table! {
 }
 
 table! {
+    manga_details (mal_id) {
+        mal_id -> Integer,
+        priority -> Integer,
+        storage -> Integer,
+        times_reread -> Integer,
+        reread_value -> Nullable<Integer>,
+        comments -> Nullable<Text>,
+    }
+}
+
+table! {
+    manga_storage (id) {
+        id -> Integer,
+        description -> Text,
+    }
+}
+
+table! {
     priorities (id) {
         id -> Integer,
         description -> Text,
@@ -155,6 +173,10 @@ joinable!(favourite_anime -> users (user_id));
 joinable!(favourite_manga -> manga (mal_id));
 joinable!(favourite_manga -> users (user_id));
 joinable!(manga -> statuses (reading_status));
+joinable!(manga_details -> manga (mal_id));
+joinable!(manga_details -> manga_storage (storage));
+joinable!(manga_details -> priorities (priority));
+joinable!(manga_details -> repeat_value (reread_value));
 
 allow_tables_to_appear_in_same_query!(
     anime,
@@ -165,6 +187,8 @@ allow_tables_to_appear_in_same_query!(
     favourite_anime,
     favourite_manga,
     manga,
+    manga_details,
+    manga_storage,
     priorities,
     repeat_value,
     statuses,
