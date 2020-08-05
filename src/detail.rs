@@ -30,7 +30,7 @@ impl AnimeDetail {
         let html = Html::parse_document(res.text()?.as_str());
 
         let selector = Selector::parse("#add_anime_priority option[selected=selected]").unwrap();
-        let priority: i32 = html
+        let priority = html
             .select(&selector)
             .next()
             .unwrap()
@@ -42,13 +42,13 @@ impl AnimeDetail {
 
         let selector =
             Selector::parse("#add_anime_storage_type option[selected=selected]").unwrap();
-        let storage: Option<i32> = html
+        let storage = html
             .select(&selector)
             .next()
             .map(|e| e.value().attr("value").unwrap().parse().unwrap());
 
         let selector = Selector::parse("#add_anime_num_watched_times").unwrap();
-        let times_rewatched: i32 = html
+        let times_rewatched = html
             .select(&selector)
             .next()
             .unwrap()
@@ -60,7 +60,7 @@ impl AnimeDetail {
 
         let selector =
             Selector::parse("#add_anime_rewatch_value option[selected=selected]").unwrap();
-        let rewatch_value: Option<i32> = html
+        let rewatch_value = html
             .select(&selector)
             .next()
             .map(|e| e.value().attr("value").unwrap().parse().unwrap());
@@ -118,7 +118,7 @@ impl MangaDetail {
         let html = Html::parse_document(res.text()?.as_str());
 
         let selector = Selector::parse("#add_manga_priority option[selected=selected]").unwrap();
-        let priority: i32 = html
+        let priority = html
             .select(&selector)
             .next()
             .unwrap()
@@ -130,14 +130,14 @@ impl MangaDetail {
 
         let selector =
             Selector::parse("#add_manga_storage_type option[selected=selected]").unwrap();
-        let storage: i32 = html
+        let storage = html
             .select(&selector)
             .next()
             .map(|e| e.value().attr("value").unwrap().parse().unwrap())
             .unwrap_or(3); //Malformed HTML in input, default value should be ID 3 for 'None'
 
         let selector = Selector::parse("#add_manga_num_read_times").unwrap();
-        let times_reread: i32 = html
+        let times_reread = html
             .select(&selector)
             .next()
             .unwrap()
@@ -149,7 +149,7 @@ impl MangaDetail {
 
         let selector =
             Selector::parse("#add_manga_reread_value option[selected=selected]").unwrap();
-        let reread_value: Option<i32> = html
+        let reread_value = html
             .select(&selector)
             .next()
             .map(|e| e.value().attr("value").unwrap().parse().unwrap());
