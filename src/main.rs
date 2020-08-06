@@ -42,15 +42,23 @@ fn main() {
                 .short("p")
                 .long("--password")
                 .takes_value(true)
-                .required_ifs(&[("skip", "none"), ("skip", "planned"), ("detail", "all")]),
+                .required_ifs(&[
+                    ("skip", "none"),
+                    ("skip", "planned"),
+                    ("skip", "anime"),
+                    ("skip", "manga"),
+                    ("detail", "all"),
+                    ("detail", "anime"),
+                    ("detail", "manga"),
+                ]),
         )
         .arg(
             Arg::with_name("skip")
                 .short("S")
                 .long("--skip")
                 .takes_value(true)
-                .possible_values(&["none", "all", "planned"])
-                .default_value("planned")
+                .possible_values(&["none", "all", "planned", "anime", "manga"])
+                .default_value("all")
                 .case_insensitive(true),
         )
         .arg(
@@ -58,7 +66,7 @@ fn main() {
                 .short("D")
                 .long("--detail")
                 .takes_value(true)
-                .possible_values(&["none", "all"])
+                .possible_values(&["none", "all", "anime", "manga"])
                 .default_value("none")
                 .case_insensitive(true),
         )
@@ -152,17 +160,11 @@ fn main() {
             }
         };
 
-        if detail == Detail::All {
-            let details = match AnimeDetail::get(&client, a.mal_id) {
-                Ok(d) => {
-                    info!("Got detailed info for '{}'", a.title);
-                    d
-                }
-                Err(e) => {
-                    error!("{}", e);
-                    exit(1);
-                }
-            };
+        if detail == Detail::All || detail == Detail::Anime {
+            let details = AnimeDetail::get(&client, a.mal_id).unwrap_or_else(|e| {
+                error!("{}", e);
+                exit(1);
+            });
 
             match details.save(&connection) {
                 Ok(_) => info!("Saved detailed info for '{}' to database", a.title),
@@ -173,7 +175,10 @@ fn main() {
             };
         }
 
-        if skip == Skip::None || (skip == Skip::Planned && a.watching_status != 6) {
+        if skip == Skip::None
+            || (skip == Skip::Planned && a.watching_status != 6)
+            || (skip != Skip::Anime && skip != Skip::All)
+        {
             let episodes = get_anime_episodes(a.mal_id, &client).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
@@ -214,17 +219,11 @@ fn main() {
             }
         };
 
-        if detail == Detail::All {
-            let details = match MangaDetail::get(&client, m.mal_id) {
-                Ok(d) => {
-                    info!("Got detailed info for '{}'", m.title);
-                    d
-                }
-                Err(e) => {
-                    error!("{}", e);
-                    exit(1);
-                }
-            };
+        if detail == Detail::All || detail == Detail::Manga {
+            let details = MangaDetail::get(&client, m.mal_id).unwrap_or_else(|e| {
+                error!("{}", e);
+                exit(1);
+            });
 
             match details.save(&connection) {
                 Ok(_) => info!("Saved detailed info for '{}' to database", m.title),
@@ -235,7 +234,10 @@ fn main() {
             };
         }
 
-        if skip == Skip::None || (skip == Skip::Planned && m.reading_status != 6) {
+        if skip == Skip::None
+            || (skip == Skip::Planned && m.reading_status != 6)
+            || (skip != Skip::Manga && skip != Skip::All)
+        {
             let chapters = get_manga_chapters(m.mal_id, &client).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);

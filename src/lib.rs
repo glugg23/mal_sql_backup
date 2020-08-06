@@ -108,6 +108,8 @@ pub enum Skip {
     None,
     All,
     Planned,
+    Anime,
+    Manga,
 }
 
 impl From<&str> for Skip {
@@ -118,6 +120,8 @@ impl From<&str> for Skip {
             "none" => Skip::None,
             "all" => Skip::All,
             "planned" => Skip::Planned,
+            "anime" => Skip::Anime,
+            "manga" => Skip::Manga,
             _ => panic!(format!("Invalid conversion from '{}' to Skip enum", string)),
         }
     }
@@ -127,6 +131,8 @@ impl From<&str> for Skip {
 pub enum Detail {
     None,
     All,
+    Anime,
+    Manga,
 }
 
 impl From<&str> for Detail {
@@ -136,6 +142,8 @@ impl From<&str> for Detail {
         match string.as_str() {
             "none" => Detail::None,
             "all" => Detail::All,
+            "anime" => Detail::Anime,
+            "manga" => Detail::Manga,
             _ => panic!(format!(
                 "Invalid conversion from '{}' to Detail enum",
                 string
