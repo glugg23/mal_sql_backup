@@ -33,12 +33,12 @@ pub fn get_user_stats(username: &str, client: &Client) -> Result<User, Error> {
     Ok(res.json()?)
 }
 
-#[derive(Deserialize)]
-struct AnimeListResponse {
-    anime: Vec<Anime>,
-}
-
 pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error> {
+    #[derive(Deserialize)]
+    struct AnimeListResponse {
+        anime: Vec<Anime>,
+    }
+
     let pages = (user.anime_stats.total_entries / 300) + 1;
     let mut anime_list = Vec::new();
 
@@ -54,12 +54,12 @@ pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error>
     Ok(anime_list)
 }
 
-#[derive(Deserialize)]
-struct MangaListResponse {
-    manga: Vec<Manga>,
-}
-
 pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error> {
+    #[derive(Deserialize)]
+    struct MangaListResponse {
+        manga: Vec<Manga>,
+    }
+
     let pages = (user.manga_stats.total_entries / 300) + 1;
     let mut manga_list = Vec::new();
 
