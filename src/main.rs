@@ -9,10 +9,10 @@ use clap::{App, Arg};
 use diesel::{Connection, ConnectionError, SqliteConnection};
 use diesel_migrations::run_pending_migrations;
 use dotenv::dotenv;
-use reqwest::blocking::Client;
 use simplelog::*;
 
 use mal_sql_backup::detail::{AnimeDetail, MangaDetail};
+use mal_sql_backup::request::Request;
 use mal_sql_backup::session::set_session_cookie;
 use mal_sql_backup::{
     get_anime_episodes, get_anime_list, get_manga_chapters, get_manga_list, get_user_stats, Detail,
@@ -106,11 +106,11 @@ fn main() {
         }
     };
 
-    let client = Client::builder().cookie_store(true).build().unwrap();
+    let request = Request::default();
 
     match password {
         Some(p) => {
-            match set_session_cookie(&client, username, p) {
+            match set_session_cookie(&request, username, p) {
                 Ok(_) => info!("Logged in as '{}'", username),
                 Err(e) => {
                     error!("{}", e);
@@ -121,7 +121,7 @@ fn main() {
         None => (),
     }
 
-    let user = match get_user_stats(username, &client) {
+    let user = match get_user_stats(username, &request) {
         Ok(u) => {
             info!("Got user stats for '{}'", u.username);
             u
@@ -140,7 +140,7 @@ fn main() {
         }
     };
 
-    let anime_list = match get_anime_list(&user, &client) {
+    let anime_list = match get_anime_list(&user, &request) {
         Ok(a) => {
             info!("Got anime list for '{}'", user.username);
             a
@@ -161,7 +161,7 @@ fn main() {
         };
 
         if detail == Detail::All || detail == Detail::Anime {
-            let details = AnimeDetail::get(&client, a.mal_id).unwrap_or_else(|e| {
+            let details = AnimeDetail::get(&request, a.mal_id).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
             });
@@ -179,7 +179,7 @@ fn main() {
             || (skip == Skip::Planned && a.watching_status != 6)
             || (skip != Skip::Anime && skip != Skip::All)
         {
-            let episodes = get_anime_episodes(a.mal_id, &client).unwrap_or_else(|e| {
+            let episodes = get_anime_episodes(a.mal_id, &request).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
             });
@@ -199,7 +199,7 @@ fn main() {
         }
     }
 
-    let manga_list = match get_manga_list(&user, &client) {
+    let manga_list = match get_manga_list(&user, &request) {
         Ok(m) => {
             info!("Got manga list for '{}'", user.username);
             m
@@ -220,7 +220,7 @@ fn main() {
         };
 
         if detail == Detail::All || detail == Detail::Manga {
-            let details = MangaDetail::get(&client, m.mal_id).unwrap_or_else(|e| {
+            let details = MangaDetail::get(&request, m.mal_id).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
             });
@@ -238,7 +238,7 @@ fn main() {
             || (skip == Skip::Planned && m.reading_status != 6)
             || (skip != Skip::Manga && skip != Skip::All)
         {
-            let chapters = get_manga_chapters(m.mal_id, &client).unwrap_or_else(|e| {
+            let chapters = get_manga_chapters(m.mal_id, &request).unwrap_or_else(|e| {
                 error!("{}", e);
                 exit(1);
             });

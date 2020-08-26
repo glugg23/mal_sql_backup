@@ -1,7 +1,7 @@
 use diesel::{Insertable, RunQueryDsl, SqliteConnection};
-use reqwest::blocking::Client;
 use scraper::{Html, Selector};
 
+use crate::request::Request;
 use crate::schema::{anime_details, manga_details};
 
 #[derive(Insertable)]
@@ -16,16 +16,8 @@ pub struct AnimeDetail {
 }
 
 impl AnimeDetail {
-    pub fn get(client: &Client, mal_id: i32) -> Result<Self, reqwest::Error> {
-        let res = client
-            .get(
-                format!(
-                    "https://myanimelist.net/ownlist/anime/{}/edit?hideLayout",
-                    mal_id
-                )
-                .as_str(),
-            )
-            .send()?;
+    pub fn get(request: &Request, mal_id: i32) -> Result<Self, reqwest::Error> {
+        let res = request.anime_detail(mal_id)?;
 
         let html = Html::parse_document(res.text()?.as_str());
 
@@ -104,16 +96,8 @@ pub struct MangaDetail {
 }
 
 impl MangaDetail {
-    pub fn get(client: &Client, mal_id: i32) -> Result<Self, reqwest::Error> {
-        let res = client
-            .get(
-                format!(
-                    "https://myanimelist.net/ownlist/manga/{}/edit?hideLayout",
-                    mal_id
-                )
-                .as_str(),
-            )
-            .send()?;
+    pub fn get(request: &Request, mal_id: i32) -> Result<Self, reqwest::Error> {
+        let res = request.manga_detail(mal_id)?;
 
         let html = Html::parse_document(res.text()?.as_str());
 

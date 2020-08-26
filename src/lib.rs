@@ -5,8 +5,8 @@ use crate::anime::Anime;
 use crate::chapter::Chapter;
 use crate::episode::Episode;
 use crate::manga::Manga;
+use crate::request::Request;
 use crate::user::User;
-use reqwest::blocking::Client;
 use reqwest::Error;
 use scraper::{Html, Selector};
 use serde::Deserialize;
@@ -17,23 +17,17 @@ pub mod detail;
 pub mod episode;
 pub mod manga;
 pub mod models;
+pub mod request;
 pub mod schema;
 pub mod session;
 pub mod user;
 
-const MAL_URL: &'static str = "https://myanimelist.net/ajaxtb.php";
-const JIKAN_URL: &'static str = "https://api.jikan.moe/v3";
-const SELECTOR: &'static str = ".spaceit_pad";
-
-pub fn get_user_stats(username: &str, client: &Client) -> Result<User, Error> {
-    let res = client
-        .get(format!("{}/user/{}", JIKAN_URL, username).as_str())
-        .send()?;
-
+pub fn get_user_stats(username: &str, request: &Request) -> Result<User, Error> {
+    let res = request.user_stats(username)?;
     Ok(res.json()?)
 }
 
-pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error> {
+pub fn get_anime_list(user: &User, request: &Request) -> Result<Vec<Anime>, Error> {
     #[derive(Deserialize)]
     struct AnimeListResponse {
         anime: Vec<Anime>,
@@ -43,9 +37,7 @@ pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error>
     let mut anime_list = Vec::new();
 
     for i in 1..=pages {
-        let res = client
-            .get(format!("{}/user/{}/animelist/all/{}", JIKAN_URL, user.username, i).as_str())
-            .send()?;
+        let res = request.anime_list(&user.username, i)?;
 
         let mut res: AnimeListResponse = res.json()?;
         anime_list.append(&mut res.anime);
@@ -54,7 +46,7 @@ pub fn get_anime_list(user: &User, client: &Client) -> Result<Vec<Anime>, Error>
     Ok(anime_list)
 }
 
-pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error> {
+pub fn get_manga_list(user: &User, request: &Request) -> Result<Vec<Manga>, Error> {
     #[derive(Deserialize)]
     struct MangaListResponse {
         manga: Vec<Manga>,
@@ -64,9 +56,7 @@ pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error>
     let mut manga_list = Vec::new();
 
     for i in 1..=pages {
-        let res = client
-            .get(format!("{}/user/{}/mangalist/all/{}", JIKAN_URL, user.username, i).as_str())
-            .send()?;
+        let res = request.manga_list(&user.username, i)?;
 
         let mut res: MangaListResponse = res.json()?;
         manga_list.append(&mut res.manga);
@@ -75,13 +65,11 @@ pub fn get_manga_list(user: &User, client: &Client) -> Result<Vec<Manga>, Error>
     Ok(manga_list)
 }
 
-pub fn get_anime_episodes(anime_id: i32, client: &Client) -> Result<Vec<Episode>, Error> {
-    let res = client
-        .get(format!("{}?detailedaid={}", MAL_URL, anime_id).as_str())
-        .send()?;
+pub fn get_anime_episodes(anime_id: i32, request: &Request) -> Result<Vec<Episode>, Error> {
+    let res = request.anime_episodes(anime_id)?;
 
     let html = Html::parse_document(res.text()?.as_str());
-    let selector = Selector::parse(SELECTOR).unwrap();
+    let selector = Selector::parse(".spaceit_pad").unwrap();
 
     Ok(html
         .select(&selector)
@@ -89,13 +77,11 @@ pub fn get_anime_episodes(anime_id: i32, client: &Client) -> Result<Vec<Episode>
         .collect())
 }
 
-pub fn get_manga_chapters(manga_id: i32, client: &Client) -> Result<Vec<Chapter>, Error> {
-    let res = client
-        .get(format!("{}?detailedmid={}", MAL_URL, manga_id).as_str())
-        .send()?;
+pub fn get_manga_chapters(manga_id: i32, request: &Request) -> Result<Vec<Chapter>, Error> {
+    let res = request.manga_chapters(manga_id)?;
 
     let html = Html::parse_document(res.text()?.as_str());
-    let selector = Selector::parse(SELECTOR).unwrap();
+    let selector = Selector::parse(".spaceit_pad").unwrap();
 
     Ok(html
         .select(&selector)
